@@ -2114,17 +2114,20 @@
 
         html += `
           <div class="cz-section" style="margin-top:16px">
-            <div class="cz-section-title" style="display:flex;justify-content:space-between;align-items:baseline">
+            <div class="cz-section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
               <span>${dateLabel}</span>
-              <span style="color:var(--pricelist-pink);font-weight:700">${rupiah(dayTotal)}</span>
+              <span style="display:flex;align-items:center;gap:10px">
+                <span style="color:var(--pricelist-pink);font-weight:700">${rupiah(dayTotal)}</span>
+                <button class="l-remove" data-day-delete="${dk}" title="Hapus semua transaksi hari ini" style="color:#c0503a;text-transform:none;letter-spacing:0;font-weight:600">Hapus hari ini</button>
+              </span>
             </div>
             <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:var(--ink-dim);margin-bottom:6px">${dayRecords.length} transaksi</div>`;
 
         dayRecords.forEach(s => {
           html += `
-            <div class="cz-syrup-row" data-history-id="${s.id}" style="cursor:pointer">
-              <span class="cz-syrup-name">${s.timeLabel} · ${s.customerName} <small style="font-weight:400;color:var(--ink-dim)">(${s.itemCount} item)</small></span>
-              <span class="cz-syrup-price">${rupiah(s.total)}</span>
+            <div class="cz-syrup-row" style="cursor:default">
+              <span class="cz-syrup-name" data-history-id="${s.id}" style="cursor:pointer">${s.timeLabel} · ${s.customerName} <small style="font-weight:400;color:var(--ink-dim)">(${s.itemCount} item)</small></span>
+              <span class="cz-syrup-price">${rupiah(s.total)} <button class="l-remove" data-history-delete="${s.id}" title="Hapus struk ini" style="color:#c0503a">✕</button></span>
             </div>`;
         });
 
@@ -2135,12 +2138,30 @@
     html += `</div>
       <div class="cz-footer">
         <span class="cz-total" style="font-size:13px">${sales.length} total transaksi</span>
-        <button class="cz-add-btn" id="historyClearBtn" style="background:#c0503a">Hapus Riwayat</button>
+        <button class="cz-add-btn" id="historyClearBtn" style="background:#c0503a">Hapus Semua</button>
       </div>`;
 
     historyBox.innerHTML = html;
 
     document.getElementById("historyCloseBtn").addEventListener("click", closeHistoryModal);
+
+    historyBox.querySelectorAll("[data-day-delete]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dk = btn.dataset.dayDelete;
+        if(confirm("Hapus semua transaksi di hari ini? Tindakan ini tidak bisa dibatalkan.")){
+          saveSales(loadSales().filter(s => s.dateKey !== dk));
+          renderHistoryModal();
+        }
+      });
+    });
+
+    historyBox.querySelectorAll("[data-history-delete]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.historyDelete;
+        saveSales(loadSales().filter(s => s.id !== id));
+        renderHistoryModal();
+      });
+    });
 
     historyBox.querySelectorAll("[data-history-id]").forEach(row => {
       row.addEventListener("click", () => {
