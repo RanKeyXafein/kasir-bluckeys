@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F74F82">
+<title>Kasir Bluckeys — Input Pesanan</title>
+
+<!-- PWA: manifest + ikon -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kasir Bluckeys">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light only;
+    --bg:#ffffff;
+    --paper:#fffdf8;
+    --line:#e2d7c2;
+    --ink:#2c2115;
+    --ink-dim:#7a6b53;
+    --green:#1d5c3c;
+    --green-deep:#123f29;
+    --coral:#c0503a;
+    --gold:#c99341;
+    --pricelist-pink:#F74F82;
+    --receipt-pink:#F74F82;
+    --receipt-white:#ffffff;
+    --receipt-brown:#4a2413;
+    --receipt-brown-soft:#7a3d22;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  .pricebar{
+    background:var(--pricelist-pink);color:#fff;padding:18px 0;
+  }
+  .pricebar .wrap{
+    display:flex;align-items:stretch;justify-content:space-between;gap:20px;flex-wrap:nowrap;
+  }
+  .pricebar .left{display:flex;align-items:flex-start;gap:18px;flex-shrink:0}
+  .obr-hint{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;color:#ffe3ec;
+    text-align:center;line-height:1.6;align-self:center;
+  }
+  .pricebar .title{
+    font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:clamp(22px,3.4vw,32px);
+    line-height:1;white-space:nowrap;
+  }
+  .pricebar .wa{
+    display:block;font-family:'Spline Sans Mono',monospace;font-size:12px;margin-top:6px;color:#ffe3ec;
+  }
+  .right-side{
+    display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:10px;flex-shrink:0;
+  }
+  .discount-pill-header{
+    font-family:'Spline Sans Mono',monospace;font-size:12px;letter-spacing:.5px;
+    background:#fff;color:var(--pricelist-pink);
+    padding:6px 16px;border-radius:999px;font-weight:700;white-space:nowrap;
+  }
+  .pricebar .meta{text-align:right;font-family:'Spline Sans Mono',monospace;color:#ffe3ec}
+  .pricebar .meta .line1{
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:#fff;
+  }
+  .pricebar .meta .line2{font-size:11.5px;margin-top:5px}
+
+  .receipt-brand{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:14px;
+  }
+  .brand-fore{
+    font-family:'Fraunces',serif;font-size:22px;font-weight:900;
+    letter-spacing:.01em;color:#fff;
+  }
+  .discount-pill-receipt{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.5px;
+    background:#fff;color:var(--receipt-pink);
+    padding:4px 12px;border-radius:999px;font-weight:700;white-space:nowrap;
+  }
+  .delivery-note{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;color:#fff;
+    opacity:.85;background:rgba(255,255,255,.15);border-radius:6px;
+    padding:8px 10px;margin-top:8px;line-height:1.5;
+  }
+
+  nav.catnav{
+    background:var(--paper);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:20;
+    overflow-x:auto;white-space:nowrap;
+  }
+  nav.catnav .wrap{display:flex;gap:6px;padding:10px 20px;align-items:center}
+  nav.catnav a, nav.catnav .catnav-btn{
+    font-family:'Spline Sans Mono',monospace;font-size:12px;letter-spacing:.5px;
+    color:var(--ink-dim);text-decoration:none;padding:8px 14px;border-radius:999px;
+    border:1px solid transparent;white-space:nowrap;background:transparent;cursor:pointer;
+  }
+  nav.catnav a:hover, nav.catnav .catnav-btn:hover{border-color:var(--line);color:var(--ink)}
+  nav.catnav .catnav-btn.active{background:var(--pricelist-pink);border-color:var(--pricelist-pink);color:#fff}
+
+  .search-btn{
+    flex-shrink:0;width:34px;height:34px;border-radius:50%;
+    border:1px solid var(--line);background:transparent;
+    color:var(--ink-dim);cursor:pointer;display:grid;place-items:center;
+    transition:.15s;
+  }
+  .search-btn:hover{background:var(--pricelist-pink);border-color:var(--pricelist-pink);color:#fff}
+  .search-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+  .search-overlay{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+    align-items:flex-start;justify-content:center;padding-top:80px;
+  }
+  .search-overlay.open{display:flex}
+  .search-box{
+    background:var(--paper);border-radius:12px;width:min(560px,92vw);
+    box-shadow:0 24px 60px -12px rgba(0,0,0,.4);overflow:hidden;
+  }
+  .search-box-top{
+    display:flex;align-items:center;gap:10px;padding:14px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .search-box-top svg{width:17px;height:17px;stroke:var(--ink-dim);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+  .search-input{
+    flex:1;border:none;background:transparent;font-family:'Inter',sans-serif;
+    font-size:16px;color:var(--ink);outline:none;
+  }
+  .search-input::placeholder{color:var(--ink-dim)}
+  .search-close{
+    background:transparent;border:none;cursor:pointer;color:var(--ink-dim);
+    font-size:20px;line-height:1;padding:2px 4px;
+  }
+  .search-results{max-height:360px;overflow-y:auto;padding:8px 0}
+  .search-empty{text-align:center;color:var(--ink-dim);font-size:13.5px;padding:28px 0;font-family:'Spline Sans Mono',monospace}
+  .search-item{
+    display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer;transition:.12s;
+  }
+  .search-item:hover{background:var(--bg)}
+  .search-item img{width:44px;height:44px;border-radius:7px;object-fit:contain;background:#eee2cc;flex-shrink:0}
+  .search-item .si-no-img{width:44px;height:44px;border-radius:7px;background:#eee2cc;flex-shrink:0}
+  .search-item .si-body{flex:1;min-width:0}
+  .search-item .si-name{font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:var(--ink)}
+  .search-item .si-cat{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--ink-dim);margin-top:2px}
+  .search-item .si-price{font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--pricelist-pink);flex-shrink:0}
+
+  .obr-item{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 18px;border-top:1px dashed var(--line);margin-top:4px;
+  }
+  .obr-text{font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-dim);flex:1;line-height:1.4}
+  .obr-text strong{color:var(--ink);display:block;font-size:13.5px;margin-bottom:2px}
+  .obr-btn{
+    font-family:'Spline Sans Mono',monospace;font-size:12px;font-weight:700;
+    padding:7px 16px;border-radius:999px;border:none;cursor:pointer;
+    background:var(--pricelist-pink);color:#fff;white-space:nowrap;transition:.12s;flex-shrink:0;
+  }
+  .obr-btn:hover{background:#d93070}
+
+  main .wrap{padding-top:36px}
+  .layout{display:grid;grid-template-columns:1.7fr 1fr;gap:36px;align-items:start;padding-bottom:70px}
+
+  .category{margin-bottom:44px;scroll-margin-top:70px}
+  .cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;border-bottom:2px solid var(--ink);padding-bottom:8px}
+  .cat-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:24px}
+  .cat-head span{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-dim)}
+
+  .items{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.items{grid-template-columns:1fr}}
+
+  .item{
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;
+    padding:12px;display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start;
+  }
+  .item.no-photo{grid-template-columns:1fr}
+  .thumb{width:64px;height:64px;border-radius:8px;object-fit:contain;background:#eee2cc}
+  .item-body{min-width:0}
+  .item .name{font-family:'Fraunces',serif;font-weight:600;font-size:15.5px;line-height:1.2}
+  .item .price{font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--pricelist-pink);margin-top:3px}
+  .stepper{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .stepper button{
+    width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--ink);font-size:15px;cursor:pointer;display:grid;place-items:center;line-height:1;
+    transition:.15s;
+  }
+  .stepper button:hover{background:var(--pricelist-pink);border-color:var(--pricelist-pink);color:#fff}
+  .stepper button:focus-visible{outline:2px solid var(--pricelist-pink);outline-offset:2px}
+  .stepper .qty{font-family:'Spline Sans Mono',monospace;font-size:13px;min-width:16px;text-align:center;font-weight:600}
+  .item.active{border-color:var(--pricelist-pink);box-shadow:0 0 0 1px var(--pricelist-pink) inset}
+
+  .pilih-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .pilih-btn{
+    font-family:'Spline Sans Mono',monospace;font-size:12px;font-weight:700;
+    padding:7px 18px;border-radius:999px;border:1px solid var(--pricelist-pink);
+    background:transparent;color:var(--pricelist-pink);cursor:pointer;transition:.15s;
+  }
+  .pilih-btn:hover{background:var(--pricelist-pink);color:#fff}
+  .item-badge{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:700;
+    background:var(--pricelist-pink);color:#fff;border-radius:999px;
+    min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;
+  }
+
+  /* ---- CUSTOMIZE MODAL ---- */
+  .customize-overlay{
+    display:none;position:fixed;inset:0;z-index:60;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+    align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;
+  }
+  .customize-overlay.open{display:flex}
+  .customize-box{
+    background:#fffdf8;border-radius:14px;width:min(480px,100%);
+    box-shadow:0 24px 60px -12px rgba(0,0,0,.4);overflow:hidden;margin-bottom:40px;
+  }
+  .cz-head{
+    padding:18px 20px;border-bottom:1px solid var(--line);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  }
+  .cz-head-name{font-family:'Fraunces',serif;font-weight:700;font-size:18px;line-height:1.25}
+  .cz-head-price{font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--pricelist-pink);margin-top:4px;font-weight:700}
+  .cz-close{background:transparent;border:none;cursor:pointer;color:var(--ink-dim);font-size:22px;line-height:1;padding:2px 4px;flex-shrink:0}
+  .cz-body{padding:6px 20px 20px}
+  .cz-section{margin-top:18px}
+  .cz-section-title{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;color:var(--ink);margin-bottom:9px;
+  }
+  .cz-section-title small{text-transform:none;letter-spacing:0;color:var(--ink-dim);font-weight:400}
+  .cz-pills{display:flex;flex-wrap:wrap;gap:8px}
+  .cz-pill{
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+    padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);
+    background:#fff;color:var(--ink);cursor:pointer;transition:.12s;
+  }
+  .cz-pill small{font-weight:500;color:var(--ink-dim);margin-left:4px}
+  .cz-pill.sel{border-color:var(--pricelist-pink);color:var(--pricelist-pink);background:#fff0f5}
+  .cz-pill-round{border-radius:999px;padding:8px 16px}
+  .cz-pill.sel small{color:var(--pricelist-pink);opacity:.85}
+  .cz-syrup-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;
+  }
+  .cz-syrup-row.sel{border-color:var(--pricelist-pink);background:#fff0f5}
+  .cz-syrup-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:600}
+  .cz-syrup-price{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-dim)}
+  .cz-note{
+    width:100%;min-height:52px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);resize:vertical;background:#fff;
+  }
+  .cz-note:focus{outline:none;border-color:var(--pricelist-pink)}
+  .cz-info-note{
+    margin-top:8px;padding:10px 12px;border-radius:8px;background:#fdf3e7;
+    font-family:'Inter',sans-serif;font-size:11.5px;color:#7a5a2a;line-height:1.5;
+  }
+  .cz-info-note strong{color:var(--pricelist-pink)}
+  .cz-qty-row{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+  .cz-qty-stepper{display:flex;align-items:center;gap:14px}
+  .cz-qty-stepper button{
+    width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--ink);font-size:17px;cursor:pointer;display:grid;place-items:center;line-height:1;
+  }
+  .cz-qty-stepper button:hover{background:var(--pricelist-pink);border-color:var(--pricelist-pink);color:#fff}
+  .cz-qty-val{font-family:'Spline Sans Mono',monospace;font-size:15px;font-weight:700;min-width:18px;text-align:center}
+  .cz-footer{padding:16px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .cz-total{font-family:'Fraunces',serif;font-weight:900;font-size:19px;color:var(--pricelist-pink)}
+  .cz-add-btn{
+    font-family:'Inter',sans-serif;font-weight:700;font-size:14px;
+    padding:12px 24px;border-radius:8px;border:none;cursor:pointer;
+    background:var(--pricelist-pink);color:#fff;transition:.15s;
+  }
+  .cz-add-btn:hover{background:#d93070}
+
+  .size-stepper-wrap{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+  .size-stepper-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .size-badge{
+    font-family:'Spline Sans Mono',monospace;font-size:10px;font-weight:700;
+    padding:2px 8px;border-radius:999px;letter-spacing:.5px;white-space:nowrap;
+  }
+  .size-badge.s{background:#f0e8d8;color:var(--ink-dim);border:1px solid var(--line)}
+  .size-badge.l{background:var(--pricelist-pink);color:#fff}
+  .size-price{font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:var(--pricelist-pink);flex:1;text-align:left;padding-left:4px}
+  .size-stepper{display:flex;align-items:center;gap:7px}
+  .size-stepper button{
+    width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--ink);font-size:14px;cursor:pointer;display:grid;place-items:center;line-height:1;
+    transition:.15s;
+  }
+  .size-stepper button:hover{background:var(--pricelist-pink);border-color:var(--pricelist-pink);color:#fff}
+  .size-stepper .qty{font-family:'Spline Sans Mono',monospace;font-size:12px;min-width:14px;text-align:center;font-weight:600}
+
+  .receipt-option-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 0;border-top:1px dashed rgba(255,255,255,.25);margin-top:4px;
+  }
+  .receipt-option-label{font-size:12.5px;color:#fff}
+  .receipt-option-label small{opacity:.7;font-size:11px}
+  .toggle-wrap{display:flex;gap:6px}
+  .toggle-btn{
+    font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;
+    padding:4px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.4);
+    background:transparent;color:#fff;cursor:pointer;transition:.12s;
+  }
+  .toggle-btn.active{background:#fff;color:var(--receipt-pink)}
+  .toggle-btn:hover{background:rgba(255,255,255,.2)}
+
+  .receipt-col{position:sticky;top:70px}
+  .receipt{
+    background:var(--receipt-pink);color:#fff;border-radius:6px;padding:26px 24px 20px;
+    box-shadow:0 24px 50px -20px #00000060;
+    font-family:'Spline Sans Mono',monospace;
+  }
+  .receipt h3{text-align:center;font-family:'Fraunces',serif;font-weight:900;font-size:20px;color:#fff}
+  .receipt .sub{text-align:center;font-size:10.5px;color:#fff;opacity:.75;letter-spacing:2px;text-transform:uppercase;margin:2px 0 16px}
+  .rule{border:none;border-top:1px dashed rgba(255,255,255,.4);margin:12px 0}
+  .lines{max-height:320px;overflow-y:auto}
+  .lines::-webkit-scrollbar{width:5px}
+  .lines::-webkit-scrollbar-thumb{background:rgba(255,255,255,.4);border-radius:3px}
+  .empty{color:#fff;opacity:.75;font-size:12.5px;text-align:center;padding:20px 0}
+  .line{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;color:#fff}
+  .l-remove{background:transparent;border:none;color:#fff;opacity:.6;cursor:pointer;font-size:11px;margin-left:8px;padding:0}
+  .l-remove:hover{opacity:1}
+  .line .l-name small{color:#fff;opacity:.7}
+  .line .l-amt{white-space:nowrap;color:#fff;font-weight:600}
+  .total-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+  .total-row .tl{font-family:'Fraunces',serif;font-weight:600;font-size:16px;color:#fff}
+  .total-row .tv{font-family:'Fraunces',serif;font-weight:900;font-size:24px;color:#fff}
+  .foot-note{text-align:center;font-size:10px;color:#fff;opacity:.75;margin-top:8px;letter-spacing:1px}
+
+  .form-row{margin-top:12px}
+  .form-row label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:.85;margin-bottom:4px}
+  .form-row input,.form-row textarea,.form-row select{
+    width:100%;padding:9px 11px;border:1px solid rgba(255,255,255,.4);border-radius:4px;
+    background:rgba(255,255,255,.18);color:#fff;font-family:'Spline Sans Mono',monospace;font-size:12.5px;
+  }
+  .form-row input:focus,.form-row textarea:focus,.form-row select:focus{outline:2px solid #fff;outline-offset:0}
+  .form-row textarea{resize:vertical;min-height:44px}
+  .form-row input::placeholder,.form-row textarea::placeholder{color:rgba(255,255,255,.55)}
+  .form-row select option{background:#b03880;color:#fff}
+
+  .outlet-search-wrap{position:relative}
+  .outlet-results{
+    display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:30;
+    background:#fffdf8;border:1px solid var(--line);border-radius:6px;
+    max-height:260px;overflow-y:auto;box-shadow:0 14px 34px -10px rgba(0,0,0,.35);
+  }
+  .outlet-results.open{display:block}
+  .outlet-item{
+    display:block;width:100%;text-align:left;padding:9px 12px;cursor:pointer;
+    border:none;background:transparent;border-bottom:1px solid var(--line);
+  }
+  .outlet-item:last-child{border-bottom:none}
+  .outlet-item:hover,.outlet-item.active{background:var(--bg)}
+  .outlet-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .outlet-item-name{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:var(--ink)}
+  .outlet-item-addr{font-family:'Inter',sans-serif;font-size:11px;color:var(--ink-dim);margin-top:2px;line-height:1.35}
+  .outlet-status{
+    font-family:'Spline Sans Mono',monospace;font-size:9.5px;font-weight:700;
+    padding:2px 7px;border-radius:999px;white-space:nowrap;flex-shrink:0;
+  }
+  .outlet-status.buka{background:#e3f8ec;color:#1b8a4c}
+  .outlet-status.tutup{background:#fce8e8;color:#c0392b}
+  .outlet-empty{padding:12px;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-dim)}
+
+  .order-btn{
+    display:block;width:100%;margin-top:18px;padding:15px;border:none;cursor:pointer;
+    background:#fff;color:var(--receipt-pink);border-radius:5px;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:14.5px;transition:.15s;
+  }
+  .order-btn:hover{background:#ffe8f4}
+  .order-btn:disabled{background:rgba(255,255,255,.3);color:rgba(255,255,255,.6);cursor:not-allowed}
+  .order-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+  footer{border-top:1px solid var(--line);padding:24px 0 50px;color:var(--ink-dim);font-size:12.5px;font-family:'Spline Sans Mono',monospace}
+
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .receipt-col{position:static;order:-1}
+  }
+
+  /* ── MOBILE ─────────────────────────────── */
+  @media(max-width:600px){
+
+    /* Header */
+    .pricebar .wrap{flex-direction:column;gap:8px;align-items:flex-start}
+    .obr-hint{text-align:left;font-size:10.5px}
+    .pricebar .title{font-size:20px}
+
+    /* Catnav */
+    nav.catnav .wrap{padding:8px 12px;gap:4px}
+    nav.catnav a, nav.catnav .catnav-btn{font-size:11px;padding:6px 10px}
+    .search-btn{width:30px;height:30px}
+
+    /* Layout */
+    .wrap{padding:0 12px}
+    main .wrap{padding-top:20px}
+    .layout{gap:20px;padding-bottom:40px}
+
+    /* Struk */
+    .receipt{padding:20px 16px 16px;border-radius:8px}
+    .receipt h3{font-size:17px}
+    .receipt-brand{margin-bottom:10px}
+    .brand-fore{font-size:18px}
+    .discount-pill-receipt{font-size:10px;padding:3px 10px}
+    .lines{max-height:220px}
+    .total-row .tv{font-size:20px}
+    .order-btn{padding:14px;font-size:14px}
+    .delivery-note{font-size:10.5px}
+
+    /* Kategori */
+    .cat-head h2{font-size:19px}
+    .category{margin-bottom:32px}
+
+    /* Item kartu */
+    .items{grid-template-columns:1fr}
+    .item{padding:10px;gap:10px}
+    .thumb{width:56px;height:56px}
+    .item .name{font-size:13.5px}
+    .item .price{font-size:12px}
+
+    /* Size stepper */
+    .size-stepper-wrap{gap:5px;margin-top:6px}
+    .size-badge{font-size:9.5px;padding:2px 7px}
+    .size-price{font-size:11px}
+    .size-stepper button{width:20px;height:20px;font-size:13px}
+    .size-stepper .qty{font-size:11px}
+
+    /* Stepper biasa */
+    .stepper button{width:26px;height:26px;font-size:15px}
+    .stepper .qty{font-size:12px}
+
+    /* Search overlay */
+    .search-overlay{padding-top:50px;align-items:flex-start}
+    .search-box{width:96vw;border-radius:10px}
+    .search-input{font-size:15px}
+    .search-item{padding:9px 14px;gap:10px}
+    .search-item img{width:38px;height:38px}
+    .search-item .si-name{font-size:13.5px}
+    .search-item .si-price{font-size:12px}
+    .obr-item{padding:10px 14px}
+    .obr-text{font-size:12px}
+    .obr-text strong{font-size:12.5px}
+    .obr-btn{font-size:11px;padding:6px 13px}
+
+    /* Form */
+    .form-row input,.form-row textarea,.form-row select{font-size:14px;padding:10px 12px}
+    .form-row label{font-size:9.5px}
+    .toggle-btn{font-size:11px;padding:5px 13px}
+  }
+</style>
+<body>
+
+<div class="pricebar">
+  <div class="wrap">
+    <div class="left">
+      <div>
+        <div class="title">Kasir Bluckeys</div>
+        <span class="wa">Input Pesanan Internal</span>
+      </div>
+    </div>
+    <div class="obr-hint">Menu ga ketemu?<br>Coba cari di search bar</div>
+  </div>
+</div>
+
+<nav class="catnav">
+  <div class="wrap" id="catnav">
+    <button class="search-btn" id="searchOpenBtn" aria-label="Cari menu">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <div class="search-box-top">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Cari menu, misal: matcha, latte...">
+      <button class="search-close" id="searchCloseBtn">✕</button>
+    </div>
+    <div class="search-results" id="searchResults">
+      <p class="search-empty">Ketik nama menu untuk mencari</p>
+    </div>
+  </div>
+</div>
+
+<div class="customize-overlay" id="customizeOverlay">
+  <div class="customize-box" id="customizeBox"></div>
+</div>
+
+<main class="wrap">
+  <div class="layout">
+
+    <div id="menuRoot"></div>
+
+    <aside class="receipt-col" aria-label="Ringkasan pesanan">
+      <div class="receipt">
+        <div class="receipt-brand">
+          <span class="brand-fore">Kopi Kenangan</span>
+          <span class="discount-pill-receipt">Diskon 50%</span>
+        </div>
+        <h3>PESANAN</h3>
+        <p class="sub">— struk pesanan —</p>
+        <hr class="rule">
+        <div class="lines" id="lines">
+          <p class="empty">Belum ada yang dipilih.<br>Yuk mulai pilih pesanan</p>
+        </div>
+        <hr class="rule">
+        <div class="receipt-option-row" id="tasRow">
+          <span class="receipt-option-label">Tas belanja <small>(+Rp1.000 / 3 item)</small><br><small id="tasNote" style="opacity:.65;font-size:10px"></small></span>
+          <div class="toggle-wrap" id="tasToggleWrap">
+            <button class="toggle-btn active" id="kantongTidak">Tidak</button>
+            <button class="toggle-btn" id="kantongYa">Ya</button>
+          </div>
+        </div>
+        <div class="total-row">
+          <span class="tl">Total</span>
+          <span class="tv" id="total">Rp0</span>
+        </div>
+        <p class="foot-note" id="count">0 item · Sudah Include Diskon 50% + Fee</p>
+
+        <div class="form-row">
+          <label for="pickupTime">Jam pickup <small style="opacity:.65;font-size:9px;text-transform:none;letter-spacing:0">— opsional</small></label>
+          <input id="pickupTime" type="time">
+        </div>
+        <div class="form-row">
+          <label for="orderNote">Catatan pesanan <small style="opacity:.65;font-size:9px;text-transform:none;letter-spacing:0">— opsional</small></label>
+          <textarea id="orderNote" placeholder="cth. dine in, meja 3 / delivery ke ..."></textarea>
+        </div>
+
+        <button class="order-btn" id="orderBtn" disabled>Pesan via WhatsApp</button>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="wrap">
+  Kasir Bluckeys · Harga sudah termasuk Diskon 50% Kopi Kenangan + Fee
+</footer>
+
+<script>
+  const WA_NUMBER = "6289522708062";
+  const KANTONG_PRICE     = 1000;
+  const KANTONG_PER_QTY   = 3; // 1 kantong menampung 3 item, lebih dari itu otomatis nambah kantong
+  const ADDON_PRICE        = 6000;
+  const MILK_OATSIDE_PRICE = 3000;
+
+  function kantongQtyFor(itemCount){
+    return itemCount > 0 ? Math.ceil(itemCount / KANTONG_PER_QTY) : 0;
+  }
+
+  const BUNDLE_ITEMS = [
+   {
+    "name": "Bundle Hemat",
+    "desc": "1 Minuman Reguler + 1 Makanan",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":20500,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"],
+      "foodOptions":["Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff","Roti Susu Manis"]},
+     {"label":"Tier 2","price":21500,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea"],
+      "foodOptions":["Salt Bread Original","Salt Bread Choco Butter","Roti Susu Manis","Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff"]},
+     {"label":"Tier 3","price":23500,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan","Milo Dinosaurus"],
+      "foodOptions":["Canele Original","Donut Almond","Salt Bread Sausage","Salt Bread Abon"]},
+     {"label":"Tier 4","price":25500,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte"],
+      "foodOptions":["Roti Srikaya","Choco Muffin","Blueberry Muffin","Butter Croissant","Salt Bread Beef n Cheese"]}
+    ]
+   },
+   {
+    "name": "Bundle Large",
+    "desc": "1 Minuman Large + 1 Makanan",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":24000,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"],
+      "foodOptions":["Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff","Salt Bread Original","Salt Bread Choco Butter"]},
+     {"label":"Tier 2","price":25000,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Kopi Susu Black Aren","Kenangan Milk Tea","Butterscotch Aren Latte","Raspberry Hibiscus"],
+      "foodOptions":["Salt Bread Original","Salt Bread Choco Butter","Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff"]},
+     {"label":"Tier 3","price":29000,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan","Creamy Caramel Latte","Butterscotch Sea Salt Latte","Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte","Dutch Chocolate","Oreo Shake"],
+      "foodOptions":["Salt Bread Sausage","Salt Bread Abon","Choco Chip Cookies","Chocolate Donut","Canele Original","Donut Almond","Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff"]},
+     {"label":"Tier 4","price":33000,"pickDrinks":1,"pickFoods":1,
+      "drinkOptions":["Caramel Macchiato","Mocha Latte","Avocado Coffee","Avocado Caramel","Caramel Dutch Choco","Hazelnut Dutch Choco"],
+      "foodOptions":["Sandwich Smoked Beef and Cheese","Croissant Abon","Chocolate Croissant","Butter Croissant","Roti Srikaya","Choco Muffin","Blueberry Muffin"]}
+    ]
+   },
+   {
+    "name": "Bundle 2 Reguler",
+    "desc": "2 Minuman Reguler",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":23000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Americano","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"]},
+     {"label":"Tier 2","price":26000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
+     {"label":"Tier 3","price":29000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Milo Dinosaurus","Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte"]},
+     {"label":"Tier 4","price":32000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte","Dutch Chocolate","Oreo Shake","Milk Oreo Crumble","Creamy Caramel Latte","Caramel Macchiato","Mocha Latte","Avocado Coffee","Avocado Caramel","Caramel Dutch Choco","Hazelnut Dutch Choco","Duo Shot Iced Shaken"]}
+    ]
+   },
+   {
+    "name": "Bundle 2 Large",
+    "desc": "2 Minuman Large",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":30000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Pistachio Aren Latte","Blueberry Americano","OG Thai Tea"]},
+     {"label":"Tier 2","price":34000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Cappuccino","Latte","Oatside Kopi Kenangan Mantan","Creamy Aren Latte"]},
+     {"label":"Tier 3","price":39000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte","Creamy Caramel Latte","Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte"]}
+    ]
+   },
+   {
+    "name": "Bundle 3 Reguler",
+    "desc": "3 Minuman Reguler",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":36500,"pickDrinks":3,"pickFoods":0,
+      "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"]},
+     {"label":"Tier 2","price":41000,"pickDrinks":3,"pickFoods":0,
+      "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
+     {"label":"Tier 3","price":45500,"pickDrinks":3,"pickFoods":0,
+      "drinkOptions":["Milo Dinosaurus","Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte"]},
+     {"label":"Tier 4","price":50000,"pickDrinks":3,"pickFoods":0,
+      "drinkOptions":["Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte","Dutch Chocolate","Oreo Shake","Milk Oreo Crumble","Creamy Caramel Latte","Caramel Macchiato","Mocha Latte","Avocado Coffee","Avocado Caramel","Caramel Dutch Choco","Hazelnut Dutch Choco","Duo Shot Iced Shaken"]}
+    ]
+   },
+   {
+    "name": "Bundle 2 Frappe",
+    "desc": "2 Frappe",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Tier 1","price":29000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Blueberry Frappe","Vanilla Kenangan Frappe","Coffeeberry Frappe"]},
+     {"label":"Tier 2","price":33000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Chocoberry Frappe","Kopi Kenangan Mantan Frappe","Dutch Choco Kenangan Frappe"]}
+    ]
+   },
+   {
+    "name": "Combo 35K",
+    "desc": "2 Minuman + 1 Snack",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Combo 35K","price":35000,"pickDrinks":2,"pickFoods":1,
+      "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea","Raspberry Hibiscus","Kopi Susu Black Aren","Latte","Creamy Aren Latte","Cappuccino","Oatside Kopi Kenangan Mantan"],
+      "foodOptions":["Salt Bread Original","Salt Bread Choco Butter","Vanilla Choux Puff","Strawberry Choux Puff","Chocolate Choux Puff","Donut Almond","Chocolate Donut","Canele Original","Choco Chip Cookies","Salt Bread Beef n Cheese","Salt Bread Sausage","Roti Srikaya","Choco Muffin","Blueberry Muffin","Butter Croissant"]}
+    ]
+   },
+   {
+    "name": "Paket Bebas Pilih",
+    "desc": "Pilih 2 atau 3 Minuman",
+    "isBundle": true,
+    "tiers": [
+     {"label":"Pilih 2 Minuman","price":26000,"pickDrinks":2,"pickFoods":0,
+      "drinkOptions":["Americano","Kopi Kenangan Mantan","Blueberry Americano","Latte","Cappuccino","Lemon Black Tea","Spanish Latte","Pistachio Aren Latte","OG Thai Tea","Raspberry Hibiscus","Butterscotch Aren Latte","Kopi Susu Black Aren","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
+     {"label":"Pilih 3 Minuman","price":38000,"pickDrinks":3,"pickFoods":0,
+      "drinkOptions":["Americano","Kopi Kenangan Mantan","Blueberry Americano","Lemon Black Tea","Spanish Latte","OG Thai Tea","Raspberry Hibiscus","Pistachio Aren Latte","Butterscotch Aren Latte","Kopi Susu Black Aren","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]}
+    ]
+   }
+  ];
+
+  const CATEGORIES = [
+ {
+  "id": "bundle",
+  "title": "Bundle",
+  "items": BUNDLE_ITEMS
+ },
+ {
+  "id": "coffee",
+  "title": "Coffee",
+  "items": [
+   {
+    "name": "Kopi Kenangan Mantan",
+    "price": 14500,
+    "priceLarge": 17500
+   },
+   {
+    "name": "Americano",
+    "price": 13500,
+    "priceLarge": 16000
+   },
+   {
+    "name": "Spanish Latte",
+    "price": 14500,
+    "priceLarge": 18500
+   },
+   {
+    "name": "Creamy Aren Latte",
+    "price": 16000,
+    "priceLarge": 20500
+   },
+   {
+    "name": "Butterscotch Aren Latte",
+    "price": 15000,
+    "priceLarge": 18500
+   },
+   {
+    "name": "Butterscotch Sea Salt Latte",
+    "price": 17500,
+    "priceLarge": 21500
+   },
+   {
+    "name": "Avocado Coffee",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Caramel Macchiato",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Caramel Latte",
+    "price": 18000,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Cappucino",
+    "price": 16000,
+    "priceLarge": 19500
+   },
+   {
+    "name": "Duo Shot Iced Shaken",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Kopi Susu Black Aren",
+    "price": 15500,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Latte",
+    "price": 16000,
+    "priceLarge": 19500
+   },
+   {
+    "name": "Matcha Espresso",
+    "price": 18000,
+    "priceLarge": 22500
+   },
+   {
+    "name": "Mocha Latte",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Toffee Nut Oat Latte",
+    "price": 16500,
+    "priceLarge": 20500
+   },
+   {
+    "name": "Toffee Nut Latte",
+    "price": 16000,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Toffee Nut Aren Latte",
+    "price": 17000,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Pistachio Aren Latte",
+    "price": 14500,
+    "priceLarge": 18000
+   },
+   {
+    "name": "Cafe Malt Latte",
+    "price": 16500,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Hazelnut Latte",
+    "price": 18000,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Vanilla Latte",
+    "price": 18000,
+    "priceLarge": 22000
+   },
+   {
+    "name": "OG Aren Speculoos Latte",
+    "price": 15500,
+    "priceLarge": 19000
+   },
+   {
+    "name": "Duo Shot OG Aren",
+    "price": 17500,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Tiramisu Latte",
+    "price": 14000,
+    "priceLarge": 18000
+   },
+   {
+    "name": "Tiramisu Mocha Latte",
+    "price": 17500,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Creamy Caramel Latte",
+    "price": 18000,
+    "priceLarge": 21500
+   },
+   {
+    "name": "Korean Banana Latte",
+    "price": 23000
+   },
+   {
+    "name": "Banana Americano",
+    "price": 19000
+   }
+  ]
+ },
+ {
+  "id": "blueberry",
+  "title": "Blueberry",
+  "items": [
+   {
+    "name": "Blueberry Americano",
+    "price": 14500,
+    "priceLarge": 18000
+   },
+   {
+    "name": "Blueberry Frappe",
+    "price": 16500,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Chocoberry Frappe",
+    "price": 18500,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Coffeeberry Frappe",
+    "price": 17500,
+    "priceLarge": 21000
+   }
+  ]
+ },
+ {
+  "id": "kenangan-frappe",
+  "title": "Kenangan Frappe",
+  "items": [
+   {
+    "name": "Choco Caramel Frappe",
+    "price": 19000,
+    "priceLarge": 22500
+   },
+   {
+    "name": "Matcha Kenangan Frappe",
+    "price": 21000,
+    "priceLarge": 26000
+   },
+   {
+    "name": "Vanilla Kenangan Frappe",
+    "price": 17500,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Butterscotch Kenangan Frappe",
+    "price": 20000,
+    "priceLarge": 25000
+   },
+   {
+    "name": "Kopi Kenangan Mantan Frappe",
+    "price": 18500,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Dutch Choco Kenangan Frappe",
+    "price": 19500,
+    "priceLarge": 23000
+   },
+   {
+    "name": "Tiramisu Frappe",
+    "price": 19000,
+    "priceLarge": 22500
+   }
+  ]
+ },
+ {
+  "id": "tea-blend",
+  "title": "Tea Blend",
+  "items": [
+   {
+    "name": "Lemon Black Tea",
+    "price": 13500,
+    "priceLarge": 17000
+   },
+   {
+    "name": "Raspberry Hibiscus",
+    "price": 15000,
+    "priceLarge": 18500
+   },
+   {
+    "name": "Fresh Lemonade",
+    "price": 13500
+   }
+  ]
+ },
+ {
+  "id": "chocolate-sweets",
+  "title": "Chocolate & Sweets",
+  "items": [
+   {
+    "name": "Avocado Milk",
+    "price": 17000,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Avocado Caramel",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Caramel Dutch Choco",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Dutch Chocolate",
+    "price": 18000,
+    "priceLarge": 23000
+   },
+   {
+    "name": "Hazelnut Dutch Choco",
+    "price": 19000,
+    "priceLarge": 24000
+   },
+   {
+    "name": "Matcha Latte",
+    "price": 17500,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Milo Dinosaurus",
+    "price": 16500,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Oreo Shake",
+    "price": 18000,
+    "priceLarge": 22000
+   },
+   {
+    "name": "Susu Grass Jelly",
+    "price": 17000,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Choco Caramel",
+    "price": 14500,
+    "priceLarge": 18000
+   },
+   {
+    "name": "Kenangan Milk Tea",
+    "price": 15500,
+    "priceLarge": 18500
+   },
+   {
+    "name": "OG Aren Milky Speculoos",
+    "price": 16500,
+    "priceLarge": 20000
+   },
+   {
+    "name": "Hazelnut Choco Milk Tea",
+    "price": 16000,
+    "priceLarge": 19500
+   },
+   {
+    "name": "Mocha Caramel",
+    "price": 18000,
+    "priceLarge": 21500
+   }
+  ]
+ },
+ {
+  "id": "thai-tea",
+  "title": "Thai Tea",
+  "items": [
+   {
+    "name": "OG Thai Tea",
+    "price": 14500,
+    "priceLarge": 16500
+   },
+   {
+    "name": "Thai Tea Loaded",
+    "price": 18500
+   },
+   {
+    "name": "Thai Tea Aren",
+    "price": 17000
+   },
+   {
+    "name": "Thai Tea Coffee",
+    "price": 17500
+   }
+  ]
+ },
+ {
+  "id": "little-kenangan",
+  "title": "Little Kenangan",
+  "items": [
+   {
+    "name": "Toffee Nut Choco Macchiato",
+    "price": 16500
+   },
+   {
+    "name": "Butterscotch Sea Salt Crumble",
+    "price": 16000
+   },
+   {
+    "name": "Milk Oreo Crumble",
+    "price": 18000
+   },
+   {
+    "name": "Babyccino",
+    "price": 14500
+   }
+  ]
+ },
+ {
+  "id": "oatside-series",
+  "title": "Oatside Series",
+  "items": [
+   {
+    "name": "Oatside Kopi Kenangan Mantan",
+    "price": 16000,
+    "priceLarge": 19000
+   },
+   {
+    "name": "Oatside Latte",
+    "price": 17500,
+    "priceLarge": 21000
+   },
+   {
+    "name": "Oatside Matcha Latte",
+    "price": 17500,
+    "priceLarge": 21000
+   }
+  ]
+ },
+ {
+  "id": "kenangan-toast",
+  "title": "Kenangan Toast",
+  "items": [
+   {
+    "name": "Bambang Choco Cheese",
+    "price": 13000
+   },
+   {
+    "name": "Adam Ayam Toast",
+    "price": 14000
+   },
+   {
+    "name": "Wahyu Sapi Toast",
+    "price": 14000
+   },
+   {
+    "name": "Choco Mocha",
+    "price": 13500
+   }
+  ]
+ },
+ {
+  "id": "food",
+  "title": "Food",
+  "items": [
+   {
+    "name": "Aren Apple Pie",
+    "price": 12500
+   },
+   {
+    "name": "Vanila Choux Puff",
+    "price": 10000
+   },
+   {
+    "name": "Strawberry Choux Puff",
+    "price": 10000
+   },
+   {
+    "name": "Chocolate Choux Puff",
+    "price": 10000
+   },
+   {
+    "name": "Salt Bread Original",
+    "price": 9500
+   },
+   {
+    "name": "Salt Bread Beef n Cheese",
+    "price": 11000
+   },
+   {
+    "name": "Canele Original",
+    "price": 10500
+   },
+   {
+    "name": "Canele Aren",
+    "price": 12500
+   },
+   {
+    "name": "Canele Toffee Nut Crumble",
+    "price": 12500
+   },
+   {
+    "name": "Donut Almond",
+    "price": 10500
+   },
+   {
+    "name": "Donut Tiramisu",
+    "price": 11500
+   },
+   {
+    "name": "Choco Muffin",
+    "price": 12500
+   },
+   {
+    "name": "Blueberry Muffin",
+    "price": 11500
+   },
+   {
+    "name": "Roti Gulung Abon",
+    "price": 13500
+   },
+   {
+    "name": "Sandwich Smoked Beef",
+    "price": 14500
+   },
+   {
+    "name": "Sandwich Chicken Tar",
+    "price": 15500
+   },
+   {
+    "name": "Chocolate Croissant",
+    "price": 13000
+   },
+   {
+    "name": "Croissant Abon",
+    "price": 13500
+   },
+   {
+    "name": "Dirty Croissant Milo",
+    "price": 14500
+   },
+   {
+    "name": "Roti Coklat Klasik",
+    "price": 8500
+   },
+   {
+    "name": "Roti Susu Manis",
+    "price": 10000
+   },
+   {
+    "name": "Roti Keju Manis",
+    "price": 11500
+   },
+   {
+    "name": "Roti Srikaya",
+    "price": 11000
+   },
+   {
+    "name": "Chocolate Donut",
+    "price": 10000
+   },
+   {
+    "name": "Sugar Donut",
+    "price": 8500
+   },
+   {
+    "name": "Tiramisu Donut",
+    "price": 11500
+   },
+   {
+    "name": "Donat Abon",
+    "price": 11500
+   },
+   {
+    "name": "Roti Sisir Keju",
+    "price": 12000
+   },
+   {
+    "name": "Roti Sisir Ori",
+    "price": 10500
+   },
+   {
+    "name": "Roti Sisir Chocolate",
+    "price": 11500
+   },
+   {
+    "name": "Roti Gulung Aren",
+    "price": 12000
+   },
+   {
+    "name": "Butter Croissant",
+    "price": 11000
+   },
+   {
+    "name": "Danish Tiramisu",
+    "price": 13500
+   },
+   {
+    "name": "Saltbread Choco Butter",
+    "price": 9500
+   },
+   {
+    "name": "Saltbread Sausage",
+    "price": 12000
+   },
+   {
+    "name": "Saltbread Abon",
+    "price": 12000
+   },
+   {
+    "name": "Coffee Butter Bun",
+    "price": 9000
+   }
+  ]
+ },
+ {
+  "id": "pasta",
+  "title": "Pasta",
+  "items": [
+   {
+    "name": "Spaghetti Tuna Aglio Olio",
+    "price": 15500
+   },
+   {
+    "name": "Pasta Indoghetti",
+    "price": 15500
+   },
+   {
+    "name": "Pasta Mentai",
+    "price": 15500
+   },
+   {
+    "name": "Thai Chicken Spaghetti",
+    "price": 14500
+   }
+  ]
+ },
+ {
+  "id": "cookies",
+  "title": "Cookies",
+  "items": [
+   {
+    "name": "Choco Chip Cookies",
+    "price": 10000
+   },
+   {
+    "name": "Dark Side Cookies",
+    "price": 14000
+   },
+   {
+    "name": "Friend Chip Cookies",
+    "price": 13000
+   },
+   {
+    "name": "Mr. Hazelnut Cookies",
+    "price": 18500
+   }
+  ]
+ },
+ {
+  "id": "signature-bake",
+  "title": "Chef Martin Praja's: Signature Bake",
+  "items": [
+   {
+    "name": "Bananachoco Soft Bake",
+    "price": 18000
+   },
+   {
+    "name": "Sweet Honey Soft Bake",
+    "price": 17000
+   },
+   {
+    "name": "Oatmeal Raisin Soft Bake",
+    "price": 18000
+   }
+  ]
+ }
+];
+
+  const rupiah = n => "Rp" + n.toLocaleString("id-ID");
+
+  // Flatten: setiap item dapat id unik, tandai apakah punya ukuran Large & apakah kategori minuman
+  const ALL = [];
+  CATEGORIES.forEach(cat => {
+    cat.items.forEach((it, i) => {
+      it.id       = cat.id + "-" + i;
+      it.hasSize  = it.priceLarge !== undefined && it.priceLarge !== null;
+      it.catId    = cat.id;
+      it.catTitle = cat.title;
+      ALL.push(it);
+    });
+  });
+
+  // cartLines: array of line item hasil kustomisasi dari popup
+  let cartLines = [];
+  let lineSeq = 0;
+  let czAddOnSeq = 0;
+
+  let kantong = false;
+
+  function setKantong(val){
+    kantong = val;
+    document.getElementById("kantongYa").classList.toggle("active", val);
+    document.getElementById("kantongTidak").classList.toggle("active", !val);
+    render();
+  }
+
+  // ---- BUILD MENU DOM ----
+  const navEl    = document.getElementById("catnav");
+  const menuRoot = document.getElementById("menuRoot");
+  const catButtons = {};
+
+  function bundlePriceLabel(it){
+    const prices = it.tiers.map(t => t.price);
+    const lo = Math.min(...prices), hi = Math.max(...prices);
+    return lo === hi ? rupiah(lo) : `${rupiah(lo)} – ${rupiah(hi)}`;
+  }
+
+  function showCategory(catId){
+    CATEGORIES.forEach(cat => {
+      const section = document.getElementById("cat-" + cat.id);
+      const btn = catButtons[cat.id];
+      const isActive = cat.id === catId;
+      if(section) section.style.display = isActive ? "" : "none";
+      if(btn) btn.classList.toggle("active", isActive);
+    });
+  }
+
+  CATEGORIES.forEach(cat => {
+    const a = document.createElement("button");
+    a.type = "button";
+    a.className = "catnav-btn";
+    a.textContent = cat.title;
+    a.addEventListener("click", () => {
+      showCategory(cat.id);
+      navEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    navEl.appendChild(a);
+    catButtons[cat.id] = a;
+
+    const section = document.createElement("section");
+    section.className = "category";
+    section.id = "cat-" + cat.id;
+    section.innerHTML = `
+      <div class="cat-head">
+        <h2>${cat.title}</h2>
+        <span>${cat.items.length} menu</span>
+      </div>
+      <div class="items"></div>`;
+    const itemsEl = section.querySelector(".items");
+
+    cat.items.forEach(it => {
+      const row = document.createElement("div");
+      row.className = "item no-photo";
+      row.dataset.id = it.id;
+
+      let priceLabel, subLabel = "";
+      if(it.isBundle){
+        priceLabel = bundlePriceLabel(it);
+        subLabel = it.desc ? `<div class="price" style="color:var(--ink-dim);font-family:'Inter',sans-serif;margin-top:2px">${it.desc}</div>` : "";
+      } else {
+        priceLabel = it.hasSize
+          ? `${rupiah(it.price)} <span style="opacity:.55">/ ${rupiah(it.priceLarge)}</span>`
+          : rupiah(it.price);
+      }
+
+      row.innerHTML = `
+        <div class="item-body">
+          <div class="name">${it.name}</div>
+          <div class="price">${priceLabel}</div>
+          ${subLabel}
+          <div class="pilih-row">
+            <button class="pilih-btn" ${it.isBundle ? `data-open-bundle-id="${it.id}"` : `data-open-id="${it.id}"`}>Pilih</button>
+            <span class="item-badge" data-badge-id="${it.id}" style="display:none">0</span>
+          </div>
+        </div>`;
+      itemsEl.appendChild(row);
+    });
+
+    menuRoot.appendChild(section);
+  });
+
+  showCategory(CATEGORIES[0].id);
+
+  // ---- EVENT: buka popup kustomisasi ----
+  menuRoot.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-open-id], button[data-open-bundle-id]");
+    if(!btn) return;
+    if(btn.dataset.openBundleId){
+      openBundleModal(btn.dataset.openBundleId);
+    } else {
+      openCustomizeModal(btn.dataset.openId);
+    }
+  });
+
+  // ---- EVENT: kantong ----
+  document.getElementById("kantongTidak").addEventListener("click", () => setKantong(false));
+  document.getElementById("kantongYa").addEventListener("click",   () => setKantong(true));
+
+  // ---- CUSTOMIZE MODAL ----
+  const customizeOverlay = document.getElementById("customizeOverlay");
+  const customizeBox     = document.getElementById("customizeBox");
+  let czState = null;
+
+  function openCustomizeModal(itemId){
+    const item = ALL.find(x => x.id === itemId);
+    if(!item) return;
+
+    czState = {
+      kind: "item",
+      item,
+      showSize: item.hasSize,
+      size:      item.hasSize ? "S" : null,
+      note: "",
+      qty: 1,
+      customAddOns: [],
+      milkOatside: false,
+    };
+    renderCustomizeModal();
+    customizeOverlay.classList.add("open");
+  }
+
+  function openBundleModal(bundleId){
+    const item = ALL.find(x => x.id === bundleId);
+    if(!item) return;
+
+    czState = {
+      kind: "bundle",
+      item,
+      tierIndex: 0,
+      selectedDrinks: [],
+      selectedFoods: [],
+      note: "",
+      qty: 1,
+      customAddOns: [],
+      milkOatside: false,
+    };
+    renderCustomizeModal();
+    customizeOverlay.classList.add("open");
+  }
+
+  function closeCustomizeModal(){
+    customizeOverlay.classList.remove("open");
+    czState = null;
+  }
+
+  function czUnitPrice(){
+    if(czState.kind === "bundle"){
+      return czState.item.tiers[czState.tierIndex].price;
+    }
+    const { item, size } = czState;
+    return item.hasSize && size === "L" ? item.priceLarge : item.price;
+  }
+
+  function czAddOnsTotal(){
+    return (czState.customAddOns.length * ADDON_PRICE) + (czState.milkOatside ? MILK_OATSIDE_PRICE : 0);
+  }
+
+  // ---- bagian "Tambahan" (Adds On custom + Milk Oatside) dipakai di semua jenis menu ----
+  function renderAddOnsSection(){
+    const rows = czState.customAddOns.map(a => `
+      <div class="cz-syrup-row sel" data-addon-remove="${a.id}" style="cursor:default">
+        <span class="cz-syrup-name">Adds On: ${a.name}</span>
+        <span class="cz-syrup-price">${rupiah(ADDON_PRICE)} <button class="l-remove" data-addon-remove-btn="${a.id}" style="color:var(--pricelist-pink)" title="Hapus">✕</button></span>
+      </div>`).join("");
+
+    return `
+      <div class="cz-section">
+        <div class="cz-section-title">Tambahan <small>Opsional</small></div>
+        <div class="cz-syrup-row ${czState.milkOatside ? "sel" : ""}" id="czMilkOatsideRow" style="cursor:pointer">
+          <span class="cz-syrup-name">Milk Oatside</span>
+          <span class="cz-syrup-price">+${rupiah(MILK_OATSIDE_PRICE)}</span>
+        </div>
+        ${rows}
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="czAddOnInput" type="text" placeholder="Adds On (cth. Extra Shot, Boba)..." style="flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font:13px Inter,sans-serif;color:var(--ink)">
+          <button id="czAddOnBtn" class="pilih-btn" type="button" style="white-space:nowrap">+ ${rupiah(ADDON_PRICE)}</button>
+        </div>
+      </div>`;
+  }
+
+  function bindAddOnsSection(){
+    const milkRow = document.getElementById("czMilkOatsideRow");
+    if(milkRow){
+      milkRow.addEventListener("click", () => {
+        czState.milkOatside = !czState.milkOatside;
+        renderCustomizeModal();
+      });
+    }
+    customizeBox.querySelectorAll("[data-addon-remove-btn]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.addonRemoveBtn;
+        czState.customAddOns = czState.customAddOns.filter(a => a.id !== id);
+        renderCustomizeModal();
+      });
+    });
+    const addOnInput = document.getElementById("czAddOnInput");
+    const addOnBtn = document.getElementById("czAddOnBtn");
+    if(addOnBtn){
+      addOnBtn.addEventListener("click", () => {
+        const name = (addOnInput.value || "").trim();
+        if(!name) { addOnInput.focus(); return; }
+        czAddOnSeq++;
+        czState.customAddOns.push({ id: "AO" + czAddOnSeq, name });
+        renderCustomizeModal();
+      });
+    }
+  }
+
+  function renderCustomizeModal(){
+    if(czState.kind === "bundle"){
+      renderBundleModal();
+      return;
+    }
+    const { item, showSize, size, note, qty } = czState;
+    const unit = czUnitPrice();
+    const extras = czAddOnsTotal();
+
+    let html = `
+      <div class="cz-head">
+        <div>
+          <div class="cz-head-name">${item.name}</div>
+          <div class="cz-head-price">${item.catTitle}</div>
+        </div>
+        <button class="cz-close" id="czCloseBtn">✕</button>
+      </div>
+      <div class="cz-body">`;
+
+    if(showSize){
+      html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Ukuran</div>
+          <div class="cz-pills">
+            <button class="cz-pill ${size==='S'?'sel':''}" data-group="size" data-value="S">Reguler <small>${rupiah(item.price)}</small></button>
+            <button class="cz-pill ${size==='L'?'sel':''}" data-group="size" data-value="L">Large <small>${rupiah(item.priceLarge)}</small></button>
+          </div>
+        </div>`;
+    }
+
+    html += renderAddOnsSection();
+
+    html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Catatan <small>Opsional</small></div>
+          <textarea class="cz-note" id="czNote" placeholder="Catatan tambahan (opsional)...">${note}</textarea>
+        </div>`;
+
+    html += `
+        <div class="cz-qty-row">
+          <div class="cz-section-title" style="margin-bottom:0">Jumlah</div>
+          <div class="cz-qty-stepper">
+            <button id="czQtyMinus">–</button>
+            <span class="cz-qty-val">${qty}</span>
+            <button id="czQtyPlus">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="cz-footer">
+        <span class="cz-total">${rupiah((unit + extras) * qty)}</span>
+        <button class="cz-add-btn" id="czAddBtn">Tambah ke Keranjang</button>
+      </div>`;
+
+    customizeBox.innerHTML = html;
+
+    document.getElementById("czCloseBtn").addEventListener("click", closeCustomizeModal);
+
+    customizeBox.querySelectorAll(".cz-pill[data-group]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const g = btn.dataset.group;
+        const v = btn.dataset.value;
+        czState[g] = v;
+        renderCustomizeModal();
+      });
+    });
+
+    bindAddOnsSection();
+
+    const noteEl = document.getElementById("czNote");
+    if(noteEl){
+      noteEl.addEventListener("input", () => { czState.note = noteEl.value; });
+    }
+
+    document.getElementById("czQtyMinus").addEventListener("click", () => {
+      if(czState.qty > 1){ czState.qty--; renderCustomizeModal(); }
+    });
+    document.getElementById("czQtyPlus").addEventListener("click", () => {
+      czState.qty++; renderCustomizeModal();
+    });
+
+    document.getElementById("czAddBtn").addEventListener("click", () => {
+      lineSeq++;
+      const noteVal = (czState.note || "").trim();
+      cartLines.push({
+        lineId: "L" + lineSeq,
+        itemId: item.id,
+        name: item.name,
+        size: showSize ? (size === "L" ? "Large" : "Reguler") : null,
+        note: noteVal,
+        qty,
+        unitPrice: czUnitPrice(),
+        addOns: czState.customAddOns.slice(),
+        milkOatside: czState.milkOatside,
+      });
+      closeCustomizeModal();
+      updateItemBadges();
+      render();
+    });
+  }
+
+  // ---- MODAL BUNDLE ----
+  function renderBundleModal(){
+    const { item, tierIndex, selectedDrinks, selectedFoods, note, qty } = czState;
+    const tier = item.tiers[tierIndex];
+    const unit = czUnitPrice();
+    const extras = czAddOnsTotal();
+    const foodOptions = tier.foodOptions || [];
+    const drinksDone = selectedDrinks.length === tier.pickDrinks;
+    const foodsDone  = (tier.pickFoods || 0) === 0 || selectedFoods.length === tier.pickFoods;
+    const canAdd = drinksDone && foodsDone;
+
+    let html = `
+      <div class="cz-head">
+        <div>
+          <div class="cz-head-name">${item.name}</div>
+          <div class="cz-head-price">${item.desc || ""}</div>
+        </div>
+        <button class="cz-close" id="czCloseBtn">✕</button>
+      </div>
+      <div class="cz-body">`;
+
+    if(item.tiers.length > 1){
+      html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Pilih Paket</div>
+          <div class="cz-pills">
+            ${item.tiers.map((t, i) => `<button class="cz-pill ${i===tierIndex?'sel':''}" data-tier="${i}">${t.label} <small>${rupiah(t.price)}</small></button>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Pilih ${tier.pickDrinks} Minuman <small>${selectedDrinks.length}/${tier.pickDrinks} dipilih</small></div>
+          <div class="cz-pills">
+            ${tier.drinkOptions.map(name => `<button class="cz-pill ${selectedDrinks.includes(name)?'sel':''}" data-drink="${name}">${name}</button>`).join("")}
+          </div>
+        </div>`;
+
+    if(tier.pickFoods > 0){
+      html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Pilih ${tier.pickFoods} Makanan <small>${selectedFoods.length}/${tier.pickFoods} dipilih</small></div>
+          <div class="cz-pills">
+            ${foodOptions.map(name => `<button class="cz-pill ${selectedFoods.includes(name)?'sel':''}" data-food="${name}">${name}</button>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    html += renderAddOnsSection();
+
+    html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Catatan <small>Opsional</small></div>
+          <textarea class="cz-note" id="czNote" placeholder="Catatan tambahan (opsional)...">${note}</textarea>
+        </div>`;
+
+    html += `
+        <div class="cz-qty-row">
+          <div class="cz-section-title" style="margin-bottom:0">Jumlah</div>
+          <div class="cz-qty-stepper">
+            <button id="czQtyMinus">–</button>
+            <span class="cz-qty-val">${qty}</span>
+            <button id="czQtyPlus">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="cz-footer">
+        <span class="cz-total">${rupiah((unit + extras) * qty)}</span>
+        <button class="cz-add-btn" id="czAddBtn" ${canAdd ? "" : "disabled style=\"opacity:.5;cursor:not-allowed\""}>Tambah ke Keranjang</button>
+      </div>`;
+
+    customizeBox.innerHTML = html;
+
+    document.getElementById("czCloseBtn").addEventListener("click", closeCustomizeModal);
+
+    customizeBox.querySelectorAll("[data-tier]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        czState.tierIndex = parseInt(btn.dataset.tier, 10);
+        czState.selectedDrinks = [];
+        czState.selectedFoods = [];
+        renderCustomizeModal();
+      });
+    });
+
+    customizeBox.querySelectorAll("[data-drink]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.drink;
+        const arr = czState.selectedDrinks;
+        const idx = arr.indexOf(name);
+        if(idx >= 0){
+          arr.splice(idx, 1);
+        } else {
+          if(arr.length >= tier.pickDrinks) arr.shift();
+          arr.push(name);
+        }
+        renderCustomizeModal();
+      });
+    });
+
+    customizeBox.querySelectorAll("[data-food]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.food;
+        const arr = czState.selectedFoods;
+        const idx = arr.indexOf(name);
+        if(idx >= 0){
+          arr.splice(idx, 1);
+        } else {
+          if(arr.length >= tier.pickFoods) arr.shift();
+          arr.push(name);
+        }
+        renderCustomizeModal();
+      });
+    });
+
+    bindAddOnsSection();
+
+    const noteEl = document.getElementById("czNote");
+    if(noteEl){
+      noteEl.addEventListener("input", () => { czState.note = noteEl.value; });
+    }
+
+    document.getElementById("czQtyMinus").addEventListener("click", () => {
+      if(czState.qty > 1){ czState.qty--; renderCustomizeModal(); }
+    });
+    document.getElementById("czQtyPlus").addEventListener("click", () => {
+      czState.qty++; renderCustomizeModal();
+    });
+
+    const addBtn = document.getElementById("czAddBtn");
+    if(canAdd){
+      addBtn.addEventListener("click", () => {
+        lineSeq++;
+        const noteVal = (czState.note || "").trim();
+        const pickedParts = [];
+        if(selectedDrinks.length) pickedParts.push(selectedDrinks.join(", "));
+        if(selectedFoods.length) pickedParts.push(selectedFoods.join(", "));
+        cartLines.push({
+          lineId: "L" + lineSeq,
+          itemId: item.id,
+          name: `${item.name} (${tier.label})`,
+          size: null,
+          note: noteVal,
+          picked: pickedParts.join(" + "),
+          qty,
+          unitPrice: czUnitPrice(),
+          addOns: czState.customAddOns.slice(),
+          milkOatside: czState.milkOatside,
+        });
+        closeCustomizeModal();
+        updateItemBadges();
+        render();
+      });
+    }
+  }
+
+  customizeOverlay.addEventListener("click", e => {
+    if(e.target === customizeOverlay) closeCustomizeModal();
+  });
+  document.addEventListener("keydown", e => {
+    if(e.key === "Escape" && customizeOverlay.classList.contains("open")) closeCustomizeModal();
+  });
+
+  function updateItemBadges(){
+    const totals = {};
+    cartLines.forEach(l => { totals[l.itemId] = (totals[l.itemId] || 0) + l.qty; });
+    document.querySelectorAll("[data-badge-id]").forEach(el => {
+      const id = el.dataset.badgeId;
+      const t = totals[id] || 0;
+      el.textContent = t;
+      el.style.display = t > 0 ? "" : "none";
+      const row = el.closest(".item");
+      if(row) row.classList.toggle("active", t > 0);
+    });
+  }
+
+  function lineExtrasTotal(l){
+    return ((l.addOns ? l.addOns.length : 0) * ADDON_PRICE) + (l.milkOatside ? MILK_OATSIDE_PRICE : 0);
+  }
+
+  function czLineLabel(l){
+    const parts = [];
+    if(l.size) parts.push(l.size);
+    if(l.picked) parts.push(l.picked);
+    if(l.addOns && l.addOns.length) parts.push(l.addOns.map(a => "Adds On: " + a.name).join(", "));
+    if(l.milkOatside) parts.push("Milk Oatside");
+    if(l.note) parts.push("Catatan: " + l.note);
+    return parts.join(", ");
+  }
+
+  // ---- RENDER STRUK ----
+  const linesEl  = document.getElementById("lines");
+  const totalEl  = document.getElementById("total");
+  const countEl  = document.getElementById("count");
+  const orderBtn = document.getElementById("orderBtn");
+
+  function render(){
+    let subtotal = 0, count = 0;
+
+    const lines = cartLines.map(l => {
+      const sub = (l.unitPrice + lineExtrasTotal(l)) * l.qty;
+      subtotal += sub; count += l.qty;
+      const label = czLineLabel(l);
+      return `<div class="line">
+        <span class="l-name">${l.name} <small>${label ? "(" + label + ") " : ""}\u00d7${l.qty}</small></span>
+        <span class="l-amt">${rupiah(sub)} <button class="l-remove" data-remove-line="${l.lineId}" title="Hapus">✕</button></span>
+      </div>`;
+    });
+
+    if(lines.length === 0){
+      linesEl.innerHTML = '<p class="empty">Belum ada yang dipilih.<br>Yuk mulai pilih pesanan</p>';
+    } else {
+      linesEl.innerHTML = lines.join("");
+      if(kantong){
+        const kQty = kantongQtyFor(count);
+        linesEl.innerHTML += `<div class="line">
+          <span class="l-name">Tas belanja <small>\u00d7${kQty}</small></span>
+          <span class="l-amt">${rupiah(kQty * KANTONG_PRICE)}</span>
+        </div>`;
+      }
+    }
+
+    const kantongTotal = (kantong && lines.length > 0) ? kantongQtyFor(count) * KANTONG_PRICE : 0;
+    const total = subtotal + kantongTotal;
+    totalEl.textContent = rupiah(total);
+    countEl.textContent = count + " item \u00b7 Sudah Include Diskon 50% + Fee";
+    orderBtn.disabled = count === 0;
+  }
+
+  linesEl.addEventListener("click", e => {
+    const btn = e.target.closest("[data-remove-line]");
+    if(!btn) return;
+    cartLines = cartLines.filter(l => l.lineId !== btn.dataset.removeLine);
+    updateItemBadges();
+    render();
+  });
+
+  // ---- KIRIM WA ----
+  orderBtn.addEventListener("click", () => {
+    if(cartLines.length === 0) return;
+    const orderNote  = document.getElementById("orderNote").value.trim();
+    const pickupTime = document.getElementById("pickupTime").value;
+
+    const now   = new Date();
+    const jam   = now.toLocaleTimeString("id-ID", { hour:"2-digit", minute:"2-digit" });
+    const tgl   = now.toLocaleDateString("id-ID",  { day:"2-digit", month:"short", year:"numeric" });
+    const waktu = jam + " · " + tgl;
+    const br    = "\n";
+    const garis = "――――――――――――――――――――";
+
+    let subtotal = 0, totalQty = 0;
+    const itemLines = cartLines.map(l => {
+      const sub = (l.unitPrice + lineExtrasTotal(l)) * l.qty;
+      subtotal += sub; totalQty += l.qty;
+      const label = czLineLabel(l);
+      const sl = label ? ` (${label})` : "";
+      return `${l.name}${sl}  x${l.qty}  ${rupiah(sub)}`;
+    }).join(br);
+
+    let total = subtotal;
+    let tasLine = "";
+    if(kantong){
+      const kQty = kantongQtyFor(totalQty);
+      const kTotal = kQty * KANTONG_PRICE;
+      total += kTotal;
+      tasLine = br + `Tas belanja  x${kQty}  ${rupiah(kTotal)}`;
+    }
+    let inner = "";
+    inner += `✦ PESANAN BLUCKEYS ✦` + br;
+    inner += `.☘︎ ݁˖ E-Receipt .☘︎ ݁˖` + br;
+    inner += garis + br;
+    inner += br;
+    inner += `Waktu  : ${waktu}` + br;
+    if(pickupTime) inner += `Jam Pickup: ${pickupTime}` + br;
+    if(orderNote) inner += `Catatan: ${orderNote}` + br;
+    inner += br;
+    inner += garis + br;
+    inner += `.☘︎ ݁˖ Order Listed .☘︎ ݁˖` + br;
+    inner += garis + br;
+    inner += br;
+    inner += itemLines;
+    inner += tasLine;
+    inner += br + br;
+    inner += garis + br;
+    inner += `Total  :  ${rupiah(total)}` + br;
+    inner += garis + br;
+
+    const pesan = "```" + br + inner + "```";
+    const msg = encodeURIComponent(pesan);
+    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
+  });
+
+  // ---- SEARCH ----
+  const searchOverlay = document.getElementById("searchOverlay");
+  const searchInput   = document.getElementById("searchInput");
+  const searchResults = document.getElementById("searchResults");
+
+  document.getElementById("searchOpenBtn").addEventListener("click", () => {
+    searchOverlay.classList.add("open");
+    searchResults.innerHTML = '<p class="search-empty">Ketik nama menu untuk mencari</p>';
+    searchInput.focus();
+  });
+  document.getElementById("searchCloseBtn").addEventListener("click", closeSearch);
+  // Tutup keyboard HP lebih awal saat mulai tap di hasil pencarian,
+  // supaya tap ke item tidak "hilang" karena layout bergeser saat keyboard menutup
+  searchResults.addEventListener("touchstart", () => { searchInput.blur(); }, { passive: true });
+  searchOverlay.addEventListener("click", e => { if(e.target === searchOverlay) closeSearch(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") closeSearch(); });
+
+  function closeSearch(){
+    searchOverlay.classList.remove("open");
+    searchInput.value = "";
+    searchResults.innerHTML = '<p class="search-empty">Ketik nama menu untuk mencari</p>';
+  }
+
+  function obrBlock(){
+    return `<div class="obr-item">
+      <div class="obr-text">
+        <strong>Tidak ketemu menu yang dicari?</strong>
+        Order By Request aja
+      </div>
+      <button class="obr-btn" id="obrBtn">Mau</button>
+    </div>`;
+  }
+
+  function bindOBR(){
+    const btn = document.getElementById("obrBtn");
+    if(!btn) return;
+    btn.addEventListener("click", () => {
+      const q = searchInput.value.trim();
+      const msg = q
+        ? `Order By Request:%0A%0AMenu yang dicari: ${encodeURIComponent(q)}`
+        : `Order By Request. Boleh dibantu?`;
+      closeSearch();
+      window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
+    });
+  }
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if(!q){
+      searchResults.innerHTML = '<p class="search-empty">Ketik nama menu untuk mencari</p>';
+      return;
+    }
+
+    const hits = [];
+    CATEGORIES.forEach(cat => {
+      cat.items.forEach(it => {
+        if(it.name.toLowerCase().includes(q)) hits.push({ it, catTitle: cat.title });
+      });
+    });
+
+    if(hits.length === 0){
+      searchResults.innerHTML = '<p class="search-empty">Menu tidak ditemukan</p>' + obrBlock();
+      bindOBR();
+      return;
+    }
+
+    searchResults.innerHTML = hits.map(({ it, catTitle }) => `
+      <div class="search-item" data-id="${it.id}" data-cat="${it.catId}">
+        <div class="si-no-img"></div>
+        <div class="si-body">
+          <div class="si-name">${it.name}</div>
+          <div class="si-cat">${catTitle}</div>
+        </div>
+        <span class="si-price">${it.isBundle ? bundlePriceLabel(it) : (it.hasSize ? rupiah(it.price) + " / " + rupiah(it.priceLarge) : rupiah(it.price))}</span>
+      </div>`).join("") + obrBlock();
+
+    searchResults.querySelectorAll(".search-item").forEach(row => {
+      row.addEventListener("click", () => {
+        const id = row.dataset.id;
+        const catId = row.dataset.cat;
+        searchInput.blur();
+        closeSearch();
+        showCategory(catId);
+        setTimeout(() => {
+          const el = document.querySelector(`.item[data-id="${id}"]`);
+          if(el) el.scrollIntoView({ behavior:"smooth", block:"center" });
+        }, 100);
+      });
+    });
+
+    bindOBR();
+  });
+
+
+  render();
+
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
