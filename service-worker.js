@@ -1,4 +1,4 @@
-const CACHE_NAME = "kasir-bluckeys-v1";
+const CACHE_NAME = "kasir-bluckeys-v4";
 const PRECACHE_URLS = [
   "./",
   "./index.html",

@@ -475,6 +475,9 @@
 
 <nav class="catnav">
   <div class="wrap" id="catnav">
+    <button class="search-btn" id="historyOpenBtn" aria-label="Riwayat penjualan" title="Riwayat penjualan" style="margin-right:6px">
+      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7" fill="none"/><path d="M3 4v5h5" fill="none"/><path d="M12 7v5l4 2" fill="none"/></svg>
+    </button>
     <button class="search-btn" id="searchOpenBtn" aria-label="Cari menu">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
     </button>
@@ -496,6 +499,14 @@
 
 <div class="customize-overlay" id="customizeOverlay">
   <div class="customize-box" id="customizeBox"></div>
+</div>
+
+<div class="customize-overlay" id="receiptOverlay">
+  <div class="customize-box" id="receiptBox"></div>
+</div>
+
+<div class="customize-overlay" id="historyOverlay">
+  <div class="customize-box" id="historyBox" style="width:min(560px,100%)"></div>
 </div>
 
 <main class="wrap">
@@ -530,6 +541,10 @@
         <p class="foot-note" id="count">0 item · Sudah Include Diskon 50% + Fee</p>
 
         <div class="form-row">
+          <label for="custName">Nama <small style="opacity:.65;font-size:9px;text-transform:none;letter-spacing:0">— opsional</small></label>
+          <input id="custName" type="text" placeholder="cth. Budi" autocomplete="off">
+        </div>
+        <div class="form-row">
           <label for="pickupTime">Jam pickup <small style="opacity:.65;font-size:9px;text-transform:none;letter-spacing:0">— opsional</small></label>
           <input id="pickupTime" type="time">
         </div>
@@ -538,7 +553,7 @@
           <textarea id="orderNote" placeholder="cth. dine in, meja 3 / delivery ke ..."></textarea>
         </div>
 
-        <button class="order-btn" id="orderBtn" disabled>Pesan via WhatsApp</button>
+        <button class="order-btn" id="orderBtn" disabled>Buat Struk</button>
       </div>
     </aside>
 
@@ -604,13 +619,13 @@
     "desc": "2 Minuman Reguler",
     "isBundle": true,
     "tiers": [
-     {"label":"Tier 1","price":23000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 1","price":24000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Americano","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"]},
-     {"label":"Tier 2","price":26000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 2","price":27000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
-     {"label":"Tier 3","price":29000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 3","price":30000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Milo Dinosaurus","Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte"]},
-     {"label":"Tier 4","price":32000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 4","price":33000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte","Dutch Chocolate","Oreo Shake","Milk Oreo Crumble","Creamy Caramel Latte","Caramel Macchiato","Mocha Latte","Avocado Coffee","Avocado Caramel","Caramel Dutch Choco","Hazelnut Dutch Choco","Duo Shot Iced Shaken"]}
     ]
    },
@@ -619,7 +634,7 @@
     "desc": "2 Minuman Large",
     "isBundle": true,
     "tiers": [
-     {"label":"Tier 1","price":30000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 1","price":31000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Pistachio Aren Latte","Blueberry Americano","OG Thai Tea"]},
      {"label":"Tier 2","price":34000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Cappuccino","Latte","Oatside Kopi Kenangan Mantan","Creamy Aren Latte"]},
@@ -647,9 +662,9 @@
     "desc": "2 Frappe",
     "isBundle": true,
     "tiers": [
-     {"label":"Tier 1","price":29000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 1","price":30000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Blueberry Frappe","Vanilla Kenangan Frappe","Coffeeberry Frappe"]},
-     {"label":"Tier 2","price":33000,"pickDrinks":2,"pickFoods":0,
+     {"label":"Tier 2","price":34000,"pickDrinks":2,"pickFoods":0,
       "drinkOptions":["Chocoberry Frappe","Kopi Kenangan Mantan Frappe","Dutch Choco Kenangan Frappe"]}
     ]
    },
@@ -664,14 +679,28 @@
     ]
    },
    {
-    "name": "Paket Bebas Pilih",
-    "desc": "Pilih 2 atau 3 Minuman",
+    "name": "Bundle Premium Frappe",
+    "desc": "Drink Apapun + Frappe Apapun \u2014 khusus request customer",
     "isBundle": true,
+    "isPremiumFrappe": true,
     "tiers": [
-     {"label":"Pilih 2 Minuman","price":26000,"pickDrinks":2,"pickFoods":0,
-      "drinkOptions":["Americano","Kopi Kenangan Mantan","Blueberry Americano","Latte","Cappuccino","Lemon Black Tea","Spanish Latte","Pistachio Aren Latte","OG Thai Tea","Raspberry Hibiscus","Butterscotch Aren Latte","Kopi Susu Black Aren","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
-     {"label":"Pilih 3 Minuman","price":38000,"pickDrinks":3,"pickFoods":0,
-      "drinkOptions":["Americano","Kopi Kenangan Mantan","Blueberry Americano","Lemon Black Tea","Spanish Latte","OG Thai Tea","Raspberry Hibiscus","Pistachio Aren Latte","Butterscotch Aren Latte","Kopi Susu Black Aren","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]}
+     {"label":"Tier 1","price":27000,"pickDrinks":1,"pickFoods":0,
+      "drinkOptions":["Americano","Lemon Black Tea","Kopi Kenangan Mantan","Spanish Latte","Blueberry Americano","Pistachio Aren Latte","OG Thai Tea"]},
+     {"label":"Tier 2","price":28500,"pickDrinks":1,"pickFoods":0,
+      "drinkOptions":["Butterscotch Aren Latte","Raspberry Hibiscus","Kopi Susu Black Aren","Kenangan Milk Tea","Latte","Cappuccino","Creamy Aren Latte","Oatside Kopi Kenangan Mantan"]},
+     {"label":"Tier 3","price":30000,"pickDrinks":1,"pickFoods":0,
+      "drinkOptions":["Milo Dinosaurus","Duo Shot OG Aren","Oatside Latte","Oatside Matcha Latte","Butterscotch Sea Salt Latte"]},
+     {"label":"Tier 4","price":31500,"pickDrinks":1,"pickFoods":0,
+      "drinkOptions":["Caramel Latte","Matcha Espresso","Hazelnut Latte","Vanilla Latte","Dutch Chocolate","Oreo Shake","Milk Oreo Crumble","Creamy Caramel Latte","Caramel Macchiato","Mocha Latte","Avocado Coffee","Avocado Caramel","Caramel Dutch Choco","Hazelnut Dutch Choco","Duo Shot Iced Shaken"]}
+    ],
+    "frappeUpgrades": [
+     {"name":"Vanilla Kenangan Frappe","extra":0},
+     {"name":"Coffeeberry Frappe","extra":0},
+     {"name":"Kopi Kenangan Mantan Frappe","extra":1000},
+     {"name":"Chocoberry Frappe","extra":1000},
+     {"name":"Dutch Choco Kenangan Frappe","extra":2000},
+     {"name":"Butterscotch Kenangan Frappe","extra":2500},
+     {"name":"Matcha Kenangan Frappe","extra":3500}
     ]
    }
   ];
@@ -1453,6 +1482,7 @@
       tierIndex: 0,
       selectedDrinks: [],
       selectedFoods: [],
+      selectedFrappeIdx: null,
       note: "",
       qty: 1,
       customAddOns: [],
@@ -1469,7 +1499,12 @@
 
   function czUnitPrice(){
     if(czState.kind === "bundle"){
-      return czState.item.tiers[czState.tierIndex].price;
+      const tier = czState.item.tiers[czState.tierIndex];
+      let p = tier.price;
+      if(czState.item.isPremiumFrappe && czState.selectedFrappeIdx !== null){
+        p += czState.item.frappeUpgrades[czState.selectedFrappeIdx].extra;
+      }
+      return p;
     }
     const { item, size } = czState;
     return item.hasSize && size === "L" ? item.priceLarge : item.price;
@@ -1632,14 +1667,15 @@
 
   // ---- MODAL BUNDLE ----
   function renderBundleModal(){
-    const { item, tierIndex, selectedDrinks, selectedFoods, note, qty } = czState;
+    const { item, tierIndex, selectedDrinks, selectedFoods, selectedFrappeIdx, note, qty } = czState;
     const tier = item.tiers[tierIndex];
     const unit = czUnitPrice();
     const extras = czAddOnsTotal();
     const foodOptions = tier.foodOptions || [];
     const drinksDone = selectedDrinks.length === tier.pickDrinks;
     const foodsDone  = (tier.pickFoods || 0) === 0 || selectedFoods.length === tier.pickFoods;
-    const canAdd = drinksDone && foodsDone;
+    const frappeDone = !item.isPremiumFrappe || selectedFrappeIdx !== null;
+    const canAdd = drinksDone && foodsDone && frappeDone;
 
     let html = `
       <div class="cz-head">
@@ -1675,6 +1711,16 @@
           <div class="cz-section-title">Pilih ${tier.pickFoods} Makanan <small>${selectedFoods.length}/${tier.pickFoods} dipilih</small></div>
           <div class="cz-pills">
             ${foodOptions.map(name => `<button class="cz-pill ${selectedFoods.includes(name)?'sel':''}" data-food="${name}">${name}</button>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    if(item.isPremiumFrappe){
+      html += `
+        <div class="cz-section">
+          <div class="cz-section-title">Pilih Frappe <small>${selectedFrappeIdx !== null ? "1/1 dipilih" : "wajib pilih 1"}</small></div>
+          <div class="cz-pills">
+            ${item.frappeUpgrades.map((f, i) => `<button class="cz-pill ${selectedFrappeIdx===i?'sel':''}" data-frappe="${i}">${f.name} <small>${f.extra > 0 ? "+" + rupiah(f.extra) : "+Rp0"}</small></button>`).join("")}
           </div>
         </div>`;
     }
@@ -1745,6 +1791,14 @@
       });
     });
 
+    customizeBox.querySelectorAll("[data-frappe]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.dataset.frappe, 10);
+        czState.selectedFrappeIdx = czState.selectedFrappeIdx === i ? null : i;
+        renderCustomizeModal();
+      });
+    });
+
     bindAddOnsSection();
 
     const noteEl = document.getElementById("czNote");
@@ -1767,6 +1821,7 @@
         const pickedParts = [];
         if(selectedDrinks.length) pickedParts.push(selectedDrinks.join(", "));
         if(selectedFoods.length) pickedParts.push(selectedFoods.join(", "));
+        if(item.isPremiumFrappe && selectedFrappeIdx !== null) pickedParts.push(item.frappeUpgrades[selectedFrappeIdx].name);
         cartLines.push({
           lineId: "L" + lineSeq,
           itemId: item.id,
@@ -1867,9 +1922,48 @@
     render();
   });
 
-  // ---- KIRIM WA ----
+  // ---- RIWAYAT PENJUALAN (localStorage) ----
+  const SALES_KEY = "bluckeysSalesV1";
+
+  function loadSales(){
+    try { return JSON.parse(localStorage.getItem(SALES_KEY) || "[]"); }
+    catch(e){ return []; }
+  }
+  function saveSales(arr){
+    try { localStorage.setItem(SALES_KEY, JSON.stringify(arr)); }
+    catch(e){}
+  }
+  function addSale(record){
+    const arr = loadSales();
+    arr.push(record);
+    saveSales(arr);
+  }
+  function dateKeyOf(d){
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function clearCartForm(){
+    cartLines = [];
+    setKantong(false);
+    document.getElementById("custName").value = "";
+    document.getElementById("pickupTime").value = "";
+    document.getElementById("orderNote").value = "";
+    updateItemBadges();
+    render();
+  }
+
+  // ---- GENERATE STRUK ----
+  const receiptOverlay = document.getElementById("receiptOverlay");
+  const receiptBox     = document.getElementById("receiptBox");
+
+  function closeReceiptModal(){
+    receiptOverlay.classList.remove("open");
+  }
+
   orderBtn.addEventListener("click", () => {
     if(cartLines.length === 0) return;
+    const custName   = document.getElementById("custName").value.trim() || "-";
     const orderNote  = document.getElementById("orderNote").value.trim();
     const pickupTime = document.getElementById("pickupTime").value;
 
@@ -1897,11 +1991,13 @@
       total += kTotal;
       tasLine = br + `Tas belanja  x${kQty}  ${rupiah(kTotal)}`;
     }
+
     let inner = "";
     inner += `✦ PESANAN BLUCKEYS ✦` + br;
     inner += `.☘︎ ݁˖ E-Receipt .☘︎ ݁˖` + br;
     inner += garis + br;
     inner += br;
+    inner += `Nama   : ${custName}` + br;
     inner += `Waktu  : ${waktu}` + br;
     if(pickupTime) inner += `Jam Pickup: ${pickupTime}` + br;
     if(orderNote) inner += `Catatan: ${orderNote}` + br;
@@ -1915,11 +2011,195 @@
     inner += br + br;
     inner += garis + br;
     inner += `Total  :  ${rupiah(total)}` + br;
-    inner += garis + br;
+    inner += garis;
 
-    const pesan = "```" + br + inner + "```";
-    const msg = encodeURIComponent(pesan);
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
+    // simpan ke riwayat penjualan
+    addSale({
+      id: "S" + now.getTime(),
+      ts: now.getTime(),
+      dateKey: dateKeyOf(now),
+      timeLabel: jam,
+      customerName: custName,
+      itemCount: totalQty,
+      total: total,
+      receiptText: inner,
+    });
+
+    // tampilkan struk buat di-copy
+    receiptBox.innerHTML = `
+      <div class="cz-head">
+        <div>
+          <div class="cz-head-name">Struk Pesanan</div>
+          <div class="cz-head-price">${custName} · ${waktu}</div>
+        </div>
+        <button class="cz-close" id="receiptCloseBtn">✕</button>
+      </div>
+      <div class="cz-body">
+        <div class="cz-section" style="margin-top:0">
+          <textarea class="cz-note" id="receiptTextArea" readonly style="min-height:320px;font-family:'Spline Sans Mono',monospace;font-size:12.5px;line-height:1.6">${inner}</textarea>
+        </div>
+      </div>
+      <div class="cz-footer">
+        <span class="cz-total" id="receiptCopyStatus" style="font-size:13px">${rupiah(total)}</span>
+        <div style="display:flex;gap:8px">
+          <button class="cz-add-btn" id="receiptCopyBtn">Copy Struk</button>
+        </div>
+      </div>`;
+
+    receiptOverlay.classList.add("open");
+
+    document.getElementById("receiptCloseBtn").addEventListener("click", () => {
+      closeReceiptModal();
+      clearCartForm();
+    });
+
+    document.getElementById("receiptCopyBtn").addEventListener("click", () => {
+      const ta = document.getElementById("receiptTextArea");
+      const status = document.getElementById("receiptCopyStatus");
+      const doFallback = () => {
+        ta.focus();
+        ta.select();
+        try { document.execCommand("copy"); } catch(e){}
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(inner).then(() => {
+          status.textContent = "Tersalin ✓";
+          setTimeout(() => { status.textContent = rupiah(total); }, 1500);
+        }).catch(doFallback);
+      } else {
+        doFallback();
+        status.textContent = "Tersalin ✓";
+        setTimeout(() => { status.textContent = rupiah(total); }, 1500);
+      }
+    });
+  });
+
+  receiptOverlay.addEventListener("click", e => {
+    if(e.target === receiptOverlay){ closeReceiptModal(); clearCartForm(); }
+  });
+
+  // ---- MODAL RIWAYAT PENJUALAN ----
+  const historyOverlay = document.getElementById("historyOverlay");
+  const historyBox     = document.getElementById("historyBox");
+
+  function closeHistoryModal(){
+    historyOverlay.classList.remove("open");
+  }
+
+  function renderHistoryModal(){
+    const sales = loadSales().slice().sort((a, b) => b.ts - a.ts);
+
+    let html = `
+      <div class="cz-head">
+        <div>
+          <div class="cz-head-name">Riwayat Penjualan</div>
+        </div>
+        <button class="cz-close" id="historyCloseBtn">✕</button>
+      </div>
+      <div class="cz-body" style="max-height:70vh;overflow-y:auto">`;
+
+    if(sales.length === 0){
+      html += `<p style="font-family:Inter,sans-serif;font-size:13px;color:var(--ink-dim);margin-top:10px">Belum ada transaksi tersimpan.</p>`;
+    } else {
+      const byDay = {};
+      sales.forEach(s => {
+        (byDay[s.dateKey] = byDay[s.dateKey] || []).push(s);
+      });
+      const dayKeys = Object.keys(byDay).sort().reverse();
+
+      dayKeys.forEach(dk => {
+        const dayRecords = byDay[dk];
+        const dayTotal = dayRecords.reduce((sum, s) => sum + s.total, 0);
+        const dateLabel = new Date(dk + "T00:00:00").toLocaleDateString("id-ID", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
+
+        html += `
+          <div class="cz-section" style="margin-top:16px">
+            <div class="cz-section-title" style="display:flex;justify-content:space-between;align-items:baseline">
+              <span>${dateLabel}</span>
+              <span style="color:var(--pricelist-pink);font-weight:700">${rupiah(dayTotal)}</span>
+            </div>
+            <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:var(--ink-dim);margin-bottom:6px">${dayRecords.length} transaksi</div>`;
+
+        dayRecords.forEach(s => {
+          html += `
+            <div class="cz-syrup-row" data-history-id="${s.id}" style="cursor:pointer">
+              <span class="cz-syrup-name">${s.timeLabel} · ${s.customerName} <small style="font-weight:400;color:var(--ink-dim)">(${s.itemCount} item)</small></span>
+              <span class="cz-syrup-price">${rupiah(s.total)}</span>
+            </div>`;
+        });
+
+        html += `</div>`;
+      });
+    }
+
+    html += `</div>
+      <div class="cz-footer">
+        <span class="cz-total" style="font-size:13px">${sales.length} total transaksi</span>
+        <button class="cz-add-btn" id="historyClearBtn" style="background:#c0503a">Hapus Riwayat</button>
+      </div>`;
+
+    historyBox.innerHTML = html;
+
+    document.getElementById("historyCloseBtn").addEventListener("click", closeHistoryModal);
+
+    historyBox.querySelectorAll("[data-history-id]").forEach(row => {
+      row.addEventListener("click", () => {
+        const id = row.dataset.historyId;
+        const sale = loadSales().find(s => s.id === id);
+        if(!sale) return;
+        closeHistoryModal();
+        receiptBox.innerHTML = `
+          <div class="cz-head">
+            <div>
+              <div class="cz-head-name">Struk Pesanan</div>
+              <div class="cz-head-price">${sale.customerName} · ${sale.timeLabel}</div>
+            </div>
+            <button class="cz-close" id="receiptCloseBtn">✕</button>
+          </div>
+          <div class="cz-body">
+            <div class="cz-section" style="margin-top:0">
+              <textarea class="cz-note" id="receiptTextArea" readonly style="min-height:320px;font-family:'Spline Sans Mono',monospace;font-size:12.5px;line-height:1.6">${sale.receiptText}</textarea>
+            </div>
+          </div>
+          <div class="cz-footer">
+            <span class="cz-total" id="receiptCopyStatus" style="font-size:13px">${rupiah(sale.total)}</span>
+            <button class="cz-add-btn" id="receiptCopyBtn">Copy Struk</button>
+          </div>`;
+        receiptOverlay.classList.add("open");
+        document.getElementById("receiptCloseBtn").addEventListener("click", closeReceiptModal);
+        document.getElementById("receiptCopyBtn").addEventListener("click", () => {
+          const status = document.getElementById("receiptCopyStatus");
+          const finish = () => {
+            status.textContent = "Tersalin ✓";
+            setTimeout(() => { status.textContent = rupiah(sale.total); }, 1500);
+          };
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(sale.receiptText).then(finish).catch(finish);
+          } else {
+            const ta = document.getElementById("receiptTextArea");
+            ta.focus(); ta.select();
+            try { document.execCommand("copy"); } catch(e){}
+            finish();
+          }
+        });
+      });
+    });
+
+    document.getElementById("historyClearBtn").addEventListener("click", () => {
+      if(sales.length === 0) return;
+      if(confirm("Hapus semua riwayat penjualan? Tindakan ini tidak bisa dibatalkan.")){
+        saveSales([]);
+        renderHistoryModal();
+      }
+    });
+  }
+
+  document.getElementById("historyOpenBtn").addEventListener("click", () => {
+    renderHistoryModal();
+    historyOverlay.classList.add("open");
+  });
+  historyOverlay.addEventListener("click", e => {
+    if(e.target === historyOverlay) closeHistoryModal();
   });
 
   // ---- SEARCH ----
