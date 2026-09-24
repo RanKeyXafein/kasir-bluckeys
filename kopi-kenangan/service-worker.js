@@ -1,4 +1,4 @@
-const CACHE_NAME = "kasir-kopi-kenangan-v1";
+const CACHE_NAME = "kasir-kopi-kenangan-v2";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
